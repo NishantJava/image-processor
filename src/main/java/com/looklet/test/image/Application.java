@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -51,13 +52,7 @@ public class Application {
             return 0;
         }
 
-        int byteTotal = 0;
-
-        for (int i = 0; i < byteCount; i++) {
-            byteTotal += fileBytes[i];
-        }
-
-        return byteTotal;
+        return IntStream.range(0, fileBytes.length).map(index -> fileBytes[index]).sum();
     }
 
     public static void printMapSortedByValues(Map<Path, Integer> fileMap) {
