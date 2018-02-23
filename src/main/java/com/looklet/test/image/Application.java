@@ -10,8 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -23,10 +25,10 @@ public class Application {
 
     public static void main(String[] args) {
         try {
-            Map<Integer, String> processedData = processImages(IMAGE_RESOURCE_FOLDER_NAME, BYTE_COUNT);
+            Map<String, Integer> processedData = processImages(IMAGE_RESOURCE_FOLDER_NAME, BYTE_COUNT);
 
             if (!processedData.isEmpty()) {
-                processedData.forEach((key, value) -> LOGGER.debug("{}: {}", key, value));
+                processedData.forEach((key, value) -> LOGGER.debug("{}: {}", value, key));
             } else {
                 LOGGER.warn("No processing data to display");
             }
@@ -35,17 +37,17 @@ public class Application {
         }
     }
 
-    public static Map<Integer, String> processImages(String imageFolderName, int byteCount) throws IOException, URISyntaxException {
-        Map<Integer, String> processedData = new TreeMap<>();
+    public static Map<String, Integer> processImages(String imageFolderName, int byteCount) throws IOException, URISyntaxException {
+        Map<String, Integer> fileMap = new HashMap<>();
 
         Path imageFolderPath = Paths.get(ClassLoader.getSystemResource(imageFolderName).toURI());
 
         try (Stream<Path> stream = Files.walk(imageFolderPath)) {
             stream.filter(Files::isRegularFile).forEach(path ->
-                    processedData.put(getByteTotal(path, byteCount), path.getFileName().toString()));
+                    fileMap.put(path.getFileName().toString(), getByteTotal(path, byteCount)));
         }
 
-        return processedData;
+        return sortMapByValues(fileMap);
     }
 
     public static int getByteTotal(Path path, int byteCount) {
@@ -63,5 +65,16 @@ public class Application {
         }
 
         return IntStream.range(0, fileBytes.length).map(index -> fileBytes[index]).sum();
+    }
+
+    public static Map<String, Integer> sortMapByValues(Map<String, Integer> fileMap) {
+        if (fileMap.isEmpty()) {
+            return fileMap;
+        }
+
+        return fileMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
     }
 }

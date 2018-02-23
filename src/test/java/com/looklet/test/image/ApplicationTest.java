@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,10 +16,10 @@ public class ApplicationTest {
 
     @Test
     public void processImages() throws Exception {
-        Map<Integer, String> expectedFileMap = new LinkedHashMap<>();
-        expectedFileMap.put(48000, "test3.txt");
-        expectedFileMap.put(65000, "test1.txt");
-        expectedFileMap.put(66000, "test2.txt");
+        Map<String, Integer> expectedFileMap = new LinkedHashMap<>();
+        expectedFileMap.put("test3.txt", 48000);
+        expectedFileMap.put("test1.txt", 65000);
+        expectedFileMap.put("test2.txt", 66000);
         assertEquals(expectedFileMap, Application.processImages(IMAGE_RESOURCE_FOLDER_NAME, 1000));
     }
 
@@ -26,5 +27,23 @@ public class ApplicationTest {
     public void getByteTotal() throws Exception {
         Path imageFolderPath = Paths.get(ClassLoader.getSystemResource(IMAGE_RESOURCE_FOLDER_NAME + "/test2.txt").toURI());
         assertEquals(66000, Application.getByteTotal(imageFolderPath, 1000));
+    }
+
+    @Test
+    public void sortMapByValues() {
+        Map<String, Integer> inputMap = new HashMap<>();
+
+        assertEquals(new HashMap<String, Integer>(), Application.sortMapByValues(inputMap));
+
+        inputMap.put("test1.txt", 2);
+        inputMap.put("test2.txt", 3);
+        inputMap.put("test3.txt", 1);
+
+        Map<String, Integer> expectedFileMap = new LinkedHashMap<>();
+        expectedFileMap.put("test3.txt", 1);
+        expectedFileMap.put("test1.txt", 2);
+        expectedFileMap.put("test2.txt", 3);
+
+        assertEquals(expectedFileMap, Application.sortMapByValues(inputMap));
     }
 }
