@@ -19,5 +19,5 @@
 8.	Lastly we just print the results.
 
 **Testing:**
-The code is written to work with any file types. So I have used text files for testing. Each test file contains single “Char” repeated 1000 times. So we know the byte total beforehand (int value of char * 1000). Rest is just routine _JUnit_.
+The code is written to work with any file types. So I have used text files for testing. Each test file contains single “Char” repeated 1000 times. So we know the byte total beforehand (ASCII value of char * 1000). Rest is just routine _JUnit_.
 
